@@ -55,6 +55,7 @@ footer{background:var(--soft);margin-top:70px;padding:44px 16px 90px;border-top:
 footer h4{font-family:'Playfair Display',serif;font-weight:500;margin-bottom:12px;font-size:18px}
 footer a,footer p{display:block;color:#5b574f;margin:7px 0;font-size:14px;text-decoration:none;cursor:pointer}
 footer a:hover{color:var(--gold)}
+footer .soc a{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:1px solid #d9d4c8;border-radius:50%;margin:0 10px 0 0;color:#3b372f}footer .soc a:hover{border-color:var(--gold)}
 .copy{max-width:1280px;margin:30px auto 0;padding-top:18px;border-top:1px solid var(--line);color:var(--mute);font-size:13px;text-align:center}
 .float{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0));z-index:15;background:#25d366;color:#fff;border-radius:30px;padding:12px 18px;font-weight:500;box-shadow:0 6px 18px #0003;text-decoration:none}
 #pop{position:fixed;inset:0;z-index:60;background:#000b;display:flex;align-items:center;justify-content:center;padding:24px}#pop .pw{position:relative;max-width:min(92vw,520px)}#pop img{display:block;max-width:100%;max-height:80vh;border-radius:8px;box-shadow:0 10px 40px #0008}#pop .px{position:absolute;top:-14px;right:-14px;width:36px;height:36px;border-radius:50%;border:2px solid #fff;background:#000;color:#fff;font-size:22px;line-height:1;cursor:pointer;z-index:2}
@@ -167,17 +168,18 @@ window.onhashchange=()=>{S.admin=false;route()};
 
 /* ===== STOREFRONT ===== */
 function store(){const s=S.set,cnt=S.cart.reduce((a,c)=>a+c.qty,0),q=S.q.toLowerCase(),list=S.prods.filter(p=>!q||p.name.toLowerCase().includes(q));
-const soc=[['fb','Facebook'],['ig','Instagram'],['tt','TikTok']].filter(x=>s[x[0]]).map(x=>`<a href="${esc(s[x[0]])}" target="_blank" rel="noopener">${x[1]}</a>`).join('');
+const SI={fb:'<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',ig:'<rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>',tt:'<path d="M21 7.917v4.034a9.948 9.948 0 0 1-5-1.951v4.5a6.5 6.5 0 1 1-8-6.326v4.326a2.5 2.5 0 1 0 4 2v-11.5h4.083a6.005 6.005 0 0 0 4.917 4.917z"/>'};
+const soc=[['fb','Facebook'],['ig','Instagram'],['tt','TikTok']].filter(x=>s[x[0]]).map(x=>`<a href="${esc(s[x[0]])}" target="_blank" rel="noopener" aria-label="${x[1]}" title="${x[1]}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${SI[x[0]]}</svg></a>`).join('');
 $('#app').innerHTML=`${s.noticeOn&&s.notice?`<div class="notice">${esc(s.notice)}</div>`:''}
-<header><div class="hd"><div class="side"><button class="ib" onclick="$('.sb').classList.toggle('on');$('.sb input').focus()" aria-label="Search">⌕</button></div><div class="logo" onclick="S.cat='';S.q='';S.n=24;reload()" style="cursor:pointer">${esc(s.brand)}</div><div class="side r"><button class="ib" onclick="cartView()" aria-label="Cart">🛍<span class="badge" ${cnt?'':'hidden'}>${cnt}</span></button></div></div>
+<header><div class="hd"><div class="side"><button class="ib" onclick="$('.sb').classList.toggle('on');$('.sb input').focus()" aria-label="Search">⌕</button></div><div class="logo" onclick="S.cat='';S.q='';S.n=24;reload()" style="cursor:pointer">${esc(s.brand)}</div><div class="side r"><button class="ib" onclick="cartView()" aria-label="Cart"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1.4"/><circle cx="19" cy="21" r="1.4"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.5L22 7H6"/></svg><span class="badge" ${cnt?'':'hidden'}>${cnt}</span></button></div></div>
 <div class="sb ${S.q?'on':''}"><input placeholder="Search products" value="${esc(S.q)}" oninput="S.q=this.value;grid()"></div></header>
 <div class="hero" style="${s.heroImg?`background-image:url(${s.heroImg})`:''}"><div><h1>${esc(s.heroT)}</h1><p>${esc(s.heroS)}</p><button class="btn" onclick="$('#gr').scrollIntoView({behavior:'smooth'})">${esc(s.heroBtn)}</button></div></div>
 <div class="wrap"><div class="cats"><button class="${S.cat?'':'on'}" onclick="pick('')">All</button>${S.cats.map(c=>`<button class="${S.cat==c.name?'on':''}" onclick="pick('${esc(c.name).replace(/'/g,"\\'")}')">${esc(c.name)}</button>`).join('')}</div>
 <h2 class="t" id="gr">${S.cat||'New arrivals'}</h2><div class="grid" id="grid"></div><div style="text-align:center;margin-top:30px" id="more"></div></div>
 <footer><div class="fg"><div><h4>${esc(s.brand)}</h4><p>${esc(s.about)}</p></div>
-<div><h4>Customer support</h4><a href="tel:${esc(s.hotline)}">Hotline: ${esc(s.hotline)}</a><a href="https://wa.me/${esc(s.whatsapp)}" target="_blank">WhatsApp us</a></div>
+<div><h4>Customer support</h4><a href="tel:${esc(s.hotline)}">Hotline: ${esc(s.hotline)}</a>${s.whatsapp?`<a href="https://wa.me/${esc(s.whatsapp)}" target="_blank">WhatsApp: +${esc(String(s.whatsapp).replace(/^\+/,''))}</a>`:''}</div>
 <div><h4>Policies</h4>${(s.policies||[]).map((p,i)=>`<a onclick="policy(${i})">${esc(p.t)}</a>`).join('')}</div>
-<div><h4>Official payment</h4><p>bKash (Personal): <b>${esc(s.bkash)}</b></p><p>Nagad (Personal): <b>${esc(s.nagad)}</b></p><div style="margin-top:10px">${soc}</div></div></div>
+<div><h4>Official payment</h4><p>bKash (Personal): <b>${esc(s.bkash)}</b></p><p>Nagad (Personal): <b>${esc(s.nagad)}</b></p><div class="soc">${soc}</div></div></div>
 <div class="copy">© ${esc(s.year||new Date().getFullYear())} ${esc(s.copyName||s.brand)}. All rights reserved.</div></footer>
 <a class="float" href="https://wa.me/${esc(s.whatsapp)}" target="_blank">WhatsApp</a>`;grid()}
 function grid(){const q=S.q.toLowerCase(),l=S.prods.filter(p=>!q||p.name.toLowerCase().includes(q));
